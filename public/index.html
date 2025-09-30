@@ -6,15 +6,51 @@
     <title>chat app</title>
   </head>
   <body>
-    <div id="user-list"></div>
-    <div id="chat-container">
-      <div id="messages"></div>
-      <input
-        id="message-input"
-        type="text"
-        placeholder="Type your message here..."
-      />
-      <button id="send-button">Send</button>
+   
+    <div id="user-list">
+        <h3>online users</h3>
+        <ul id="users"></ul>
     </div>
-  </body>
+    <div class="chat"></div>
+    <form id="message-form">
+        <input
+          id="message-input"
+          type="text"
+          placeholder="Type your message here..."
+        />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script >
+
+  const socket = io();
+
+  const chat = document.getElementById("chat");
+  const userList = document.getElementById("users");
+  const messageForm = document.getElementById("message-form");
+  const messageInput = document.getElementById("message-input");
+
+  const userName = prompt("Enter your name:");
+
+  socket.emit("join", userName);
+
+  socket.on('userJoined', (user)=>{
+    addMessage(`${user} has joined the chat`);
+  })
+
+  socket.on('userList', (users)=>{
+    userList.innerHTML = users.map(user=> `<li>${user}</>`).join(' ')
+  })
+
+  function addMessage(input) {
+    const messageElement = document.createElement("div");
+    messageElement.textContent = input;
+    chat.appendChild(messageElement);
+
+    // Scroll to the bottom
+    chat.scrollTop = chat.scrollHeight;
+  }
+</script>
+</body>
 </html>
