@@ -38,10 +38,31 @@
   socket.on('userJoined', (user)=>{
     addMessage(`${user} has joined the chat`);
   })
+  socket.on('userLeft', (user)=>{
+    addMessage(`${user} has left the chat`);
+  });
 
   socket.on('userList', (users)=>{
-    userList.innerHTML = users.map(user=> `<li>${user}</>`).join(' ')
+    userList.innerHTML = users.map(user=> `<li>${user}</li>`).join(' ')
   })
+
+
+    //listen for incoming messages
+  socket.on('chatMessage', (message)=>{
+    addMessage(`${message.userName}: ${message.text}`);
+  })
+  //handle form submission
+  messageForm.addEventListener("submit", event=>{
+    event.preventDefault();
+    const ExtractedMessage = messageInput.value.trim();
+    if(ExtractedMessage){
+        socket.emit('chatMessage', {
+          userName, text : ExtractedMessage 
+        })
+        messageInput.value = '';
+    }
+  })
+
 
   function addMessage(input) {
     const messageElement = document.createElement("div");
